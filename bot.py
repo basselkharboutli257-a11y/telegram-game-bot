@@ -1,15 +1,33 @@
 import sqlite3
 import telebot
 from telebot import types
+import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+
+# --- تشغيل خادم وهمي لإبقاء موقع Render نشطاً ولا يتوقف ---
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is active and running!")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
+    server.serve_forever()
+
+# تشغيل الخادم الوهمي في الخلفية
+threading.Thread(target=run_web_server, daemon=True).start()
+# ----------------------------------------------------
 
 TOKEN = "8828639829:AAFdGAGzgpvA8aJFdDAyGxwrcYONp53CrEs"
-bot = telebot.TeleBot(TOKEN)
+bot = ebot.TeleBot(TOKEN)
 
 def init_db():
     conn = sqlite3.connect("store.db")
     cursor = conn.cursor()
     
-    # جدول الإعدادات
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             key TEXT PRIMARY KEY,
@@ -17,7 +35,6 @@ def init_db():
         )
     """)
     
-    # جدول الألعاب والأقسام
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS games (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,7 +42,6 @@ def init_db():
         )
     """)
     
-    # جدول الفئات والخدمات
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +55,6 @@ def init_db():
     
     cursor.execute("INSERT OR IGNORE INTO settings (key, value) VALUES ('exchange_rate', 15000)")
     
-    # إعادة تعيين وتحديث قائمة ببجي لضمان مطابقتها تماماً
     cursor.execute("DELETE FROM products WHERE game_id = 1")
     cursor.execute("DELETE FROM games WHERE id = 1")
     
