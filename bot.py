@@ -2,11 +2,9 @@ import sqlite3
 import telebot
 from telebot import types
 
-# ضع توكن البوت الخاص بك هنا بين القوسين
-TOKEN = "8719921976:AAE-g6J0le062uM5AQn4iKEbiZ7mw_3wLKY"
+TOKEN = "8828639829:AAFdGAGzgpvA8aJFdDAyGxwrcYONp53CrEs"
 bot = telebot.TeleBot(TOKEN)
 
-# --- إعداد قاعدة البيانات ---
 def init_db():
     conn = sqlite3.connect("store.db")
     cursor = conn.cursor()
@@ -61,7 +59,6 @@ def get_products():
     conn.close()
     return products
 
-# القائمة الرئيسية للأزرار
 def main_menu():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("🎮 قائمة الألعاب والأسعار", callback_data="show_products"))
@@ -116,7 +113,7 @@ def callback_query(call):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("🔙 القائمة الرئيسية", callback_data="main_menu"))
         bot.edit_message_text(
-            "📞 لإتمام عمليات الشحن، يرجى التواصل مع الإدارة عبر المعرف الخاص بك.",
+            "📞 لإتمام عمليات الشحن، يرجى التواصل معنا.",
             call.message.chat.id, call.message.message_id, reply_markup=markup
         )
 
@@ -128,4 +125,3 @@ def callback_query(call):
 
 print("Bot is running...")
 bot.infinity_polling()
-            
